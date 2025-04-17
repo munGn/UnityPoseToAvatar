@@ -14,6 +14,7 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
   public class PoseLandmarkResultRunner : VisionTaskApiRunner<PoseLandmarker>
   {
     private Experimental.TextureFramePool _textureFramePool;
+    [SerializeField] private LandmarkRig landmarkRig;
 
     public override void Stop()
     {
@@ -74,7 +75,7 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
 
         if (taskApi.TryDetectForVideo(image, GetCurrentTimestampMillisec(), imageProcessingOptions, ref result))
         {
-          Debug.Log(result);
+          landmarkRig.SetPose(result);
         }
         DisposeAllMasks(result);
       }

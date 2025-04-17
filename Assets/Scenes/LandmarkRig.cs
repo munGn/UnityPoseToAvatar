@@ -366,6 +366,8 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+using Mediapipe.Tasks.Components.Containers;
+using Mediapipe.Tasks.Vision.PoseLandmarker;
 
 public class LandmarkRig : MonoBehaviour
 {
@@ -373,21 +375,9 @@ public class LandmarkRig : MonoBehaviour
 
     private enum Landmark
     {
-        Nose,
-        LeftShoulder,
-        RightShoulder,
-        LeftElbow,
-        RightElbow,
-        LeftWrist,
-        RightWrist,
-        LeftHip,
-        RightHip,
-        LeftKnee,
-        RightKnee,
-        LeftAnkle,
-        RightAnkle,
-        LeftHeel,
-        RightHeel,
+        Nose = 0, LeftEyeInner = 1, LeftEye = 2, LeftEyeOuter = 3, RightEyeInner = 4, RightEye = 5, RightEyeOuter = 6, LeftEar = 7, RightEar = 8, MouthLeft = 9, MouthRight = 10,
+        LeftShoulder = 11, RightShoulder = 12, LeftElbow = 13, RightElbow = 14, LeftWrist = 15, RightWrist = 16, LeftPinky = 17, RightPinky = 18, LeftIndex = 19, RightIndex = 20, LeftThumb = 21, RightThumb = 22,
+        LeftHip = 23, RightHip = 24, LeftKnee = 25, RightKnee = 26, LeftAnkle = 27, RightAnkle = 28, LeftHeel = 29, RightHeel = 30, LeftFootIndex = 31, RightFootIndex = 32
     }
 
     private Dictionary<Landmark, Vector3> landmarks = new Dictionary<Landmark, Vector3>();
@@ -410,7 +400,6 @@ public class LandmarkRig : MonoBehaviour
     private Quaternion initialHipRotation;
     private Quaternion initialSpineRotation;
     private Quaternion initialChestRotation;
-    private bool freeze = false;
 
     void Start()
     {
@@ -439,8 +428,10 @@ public class LandmarkRig : MonoBehaviour
         foreach (var key in keys)
         {
             Vector3 pos = landmarks[key];
-            pos.x = -pos.x;
-            pos.z = -pos.z;
+            // pos.x = -pos.x;
+            pos.x = pos.x;
+            // pos.z = -pos.z;
+            pos.z = pos.z;
             landmarks[key] = pos; // 수정한 값을 다시 집어넣기
         }
 
@@ -475,8 +466,6 @@ public class LandmarkRig : MonoBehaviour
 
     void Update()
     {
-        if (freeze) return;
-        freeze = true;
         Vector3 neckPos = (landmarks[Landmark.RightShoulder] + landmarks[Landmark.LeftShoulder]) / 2;
         Vector3 hipsPos = (landmarks[Landmark.RightHip] + landmarks[Landmark.LeftHip]) / 2;
 
@@ -503,7 +492,36 @@ public class LandmarkRig : MonoBehaviour
         boneRightLowerArm.Update(landmarks[Landmark.RightElbow], landmarks[Landmark.RightWrist]);
         boneLeftUpperArm.Update(landmarks[Landmark.LeftShoulder], landmarks[Landmark.LeftElbow]);
         boneLeftLowerArm.Update(landmarks[Landmark.LeftElbow], landmarks[Landmark.LeftWrist]);
+        Debug.Log("updatePose");
+    }
 
+    public void SetPose(PoseLandmarkerResult result)
+    {
+        Debug.Log("setPose");
+        var poseWorldLandmark = result.poseLandmarks[0];
+        landmarks[Landmark.Nose] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.Nose]);
+        landmarks[Landmark.LeftShoulder] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.LeftShoulder]);
+        landmarks[Landmark.RightShoulder] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.RightShoulder]);
+        landmarks[Landmark.LeftElbow] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.LeftElbow]);
+        landmarks[Landmark.RightElbow] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.RightElbow]);
+        landmarks[Landmark.LeftWrist] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.LeftWrist]);
+        landmarks[Landmark.RightWrist] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.RightWrist]);
+        landmarks[Landmark.LeftHip] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.LeftHip]);
+        landmarks[Landmark.RightHip] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.RightHip]);
+        landmarks[Landmark.LeftKnee] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.LeftKnee]);
+        landmarks[Landmark.RightKnee] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.RightKnee]);
+        landmarks[Landmark.LeftAnkle] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.LeftAnkle]);
+        landmarks[Landmark.RightAnkle] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.RightAnkle]);
+        landmarks[Landmark.LeftHeel] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.LeftHeel]);
+        landmarks[Landmark.RightHeel] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.RightHeel]);
+    }
+
+    Vector3 LandmarkToVector(NormalizedLandmark landmark)
+    {
+        var x = landmark.x;
+        var y = -landmark.y;
+        var z = landmark.z;
+        return new Vector3(x, y, z);
     }
 }
 
