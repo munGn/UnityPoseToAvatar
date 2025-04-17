@@ -492,12 +492,10 @@ public class LandmarkRig : MonoBehaviour
         boneRightLowerArm.Update(landmarks[Landmark.RightElbow], landmarks[Landmark.RightWrist]);
         boneLeftUpperArm.Update(landmarks[Landmark.LeftShoulder], landmarks[Landmark.LeftElbow]);
         boneLeftLowerArm.Update(landmarks[Landmark.LeftElbow], landmarks[Landmark.LeftWrist]);
-        Debug.Log("updatePose");
     }
 
     public void SetPose(PoseLandmarkerResult result)
     {
-        Debug.Log("setPose");
         var poseWorldLandmark = result.poseLandmarks[0];
         landmarks[Landmark.Nose] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.Nose]);
         landmarks[Landmark.LeftShoulder] = LandmarkToVector(poseWorldLandmark.landmarks[(int)Landmark.LeftShoulder]);
