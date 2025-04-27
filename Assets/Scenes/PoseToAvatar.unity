@@ -627,6 +627,8 @@ MonoBehaviour:
   _bootstrapPrefab: {fileID: 968918444066301895, guid: 1146a9de09159a948b683e94fb3d3c95, type: 3}
   screen: {fileID: 1006057043}
   runningMode: 0
+  landmarkRig: {fileID: 1114692681}
+  _poseLandmarkerResultAnnotationController: {fileID: 1006057044}
 --- !u!1 &1114692680 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: a81906756a8f3aa4caecfdcad21fc6dc, type: 3}

@@ -1,9 +1,3 @@
-// Copyright (c) 2023 homuler
-//
-// Use of this source code is governed by an MIT-style
-// license that can be found in the LICENSE file or at
-// https://opensource.org/licenses/MIT.
-
 using System.Collections;
 using Mediapipe.Tasks.Vision.PoseLandmarker;
 using UnityEngine;
@@ -15,6 +9,7 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
   {
     private Experimental.TextureFramePool _textureFramePool;
     [SerializeField] private LandmarkRig landmarkRig;
+    [SerializeField] private PoseLandmarkerResultAnnotationController _poseLandmarkerResultAnnotationController;
 
     public override void Stop()
     {
@@ -46,6 +41,8 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
       _textureFramePool = new Experimental.TextureFramePool(imageSource.textureWidth, imageSource.textureHeight);
       // NOTE: The screen will be resized later, keeping the aspect ratio.
       screen.Initialize(imageSource);
+      SetupAnnotationController(_poseLandmarkerResultAnnotationController, imageSource);
+      _poseLandmarkerResultAnnotationController.InitScreen(imageSource.textureWidth, imageSource.textureHeight);
 
       var transformationOptions = imageSource.GetTransformationOptions();
       var flipHorizontally = transformationOptions.flipHorizontally;
@@ -75,8 +72,13 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
 
         if (taskApi.TryDetectForVideo(image, GetCurrentTimestampMillisec(), imageProcessingOptions, ref result))
         {
+          _poseLandmarkerResultAnnotationController.DrawNow(result);
           landmarkRig.SetPose(result);
         }
+        else
+        {
+          _poseLandmarkerResultAnnotationController.DrawNow(default);
+        } 
         DisposeAllMasks(result);
       }
     }
