@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Mediapipe.Tasks.Vision.PoseLandmarker;
 using UnityEngine;
@@ -8,6 +9,7 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
   public class PoseLandmarkResultRunner : VisionTaskApiRunner<PoseLandmarker>
   {
     private Experimental.TextureFramePool _textureFramePool;
+    private LandmarkGizmo _landmarkGizmo = new();
     [SerializeField] private LandmarkRig landmarkRig;
     [SerializeField] private PoseLandmarkerResultAnnotationController _poseLandmarkerResultAnnotationController;
 
@@ -73,6 +75,7 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
         if (taskApi.TryDetectForVideo(image, GetCurrentTimestampMillisec(), imageProcessingOptions, ref result))
         {
           _poseLandmarkerResultAnnotationController.DrawNow(result);
+          _landmarkGizmo.SetResult(result);
           landmarkRig.SetPose(result);
         }
         else
@@ -92,6 +95,11 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
           mask.Dispose();
         }
       }
+    }
+
+    private void OnDrawGizmos()
+    {
+      _landmarkGizmo.DrawLandmarks();
     }
   }
 }
