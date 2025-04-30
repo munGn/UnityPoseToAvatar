@@ -24,7 +24,8 @@ public class LandmarkRig : MonoBehaviour
         var boneSpine = new Bone(animator.GetBoneTransform(HumanBodyBones.Spine), boneHips);
         var boneChest = new Bone(animator.GetBoneTransform(HumanBodyBones.Chest), boneSpine);
         var boneUpperChest = new Bone(animator.GetBoneTransform(HumanBodyBones.UpperChest), boneChest);
-        var boneNeck = new Bone(animator.GetBoneTransform(HumanBodyBones.Neck), boneChest);
+        var boneNeck = new Bone(animator.GetBoneTransform(HumanBodyBones.Neck), boneUpperChest);
+        var boneHead = new Bone(animator.GetBoneTransform(HumanBodyBones.Head), boneNeck);
         
         var boneLeftShoulder = new Bone(animator.GetBoneTransform(HumanBodyBones.LeftShoulder), boneUpperChest);
         var boneLeftUpperArm = new Bone(animator.GetBoneTransform(HumanBodyBones.LeftUpperArm), boneLeftShoulder);
@@ -60,17 +61,6 @@ public class LandmarkRig : MonoBehaviour
         var rightLowerLegHelper = new TwoLandmarkBoneHelper(_landmarkWrapper, LandmarkID.RightKnee, LandmarkID.RightAnkle, boneRightLowerLeg);
         var rightFootHelper = new TwoLandmarkBoneHelper(_landmarkWrapper, LandmarkID.RightAnkle, LandmarkID.RightFootIndex, boneRightFoot);
         
-        _helpers.Add(leftUpperArmHelper);
-        _helpers.Add(leftLowerArmHelper);
-        _helpers.Add(rightUpperArmHelper);
-        _helpers.Add(rightLowerArmHelper);
-        _helpers.Add(leftUpperLegHelper);
-        _helpers.Add(leftLowerLegHelper);
-        _helpers.Add(leftFootHelper);
-        _helpers.Add(rightUpperLegHelper);
-        _helpers.Add(rightLowerLegHelper);
-        _helpers.Add(rightFootHelper);
-
         var bodyHelper = new BodyLandmarkBonesHelper(
             _landmarkWrapper,
             boneHips,
@@ -82,8 +72,22 @@ public class LandmarkRig : MonoBehaviour
             boneLeftShoulder,
             boneRightShoulder
             );
+        var headHelper = new HeadRotationHelper(_landmarkWrapper, boneNeck, boneHead);
         
         _helpers.Add(bodyHelper);
+        _helpers.Add(headHelper);
+        
+        _helpers.Add(leftUpperArmHelper);
+        _helpers.Add(leftLowerArmHelper);
+        _helpers.Add(rightUpperArmHelper);
+        _helpers.Add(rightLowerArmHelper);
+        _helpers.Add(leftUpperLegHelper);
+        _helpers.Add(leftLowerLegHelper);
+        _helpers.Add(leftFootHelper);
+        _helpers.Add(rightUpperLegHelper);
+        _helpers.Add(rightLowerLegHelper);
+        _helpers.Add(rightFootHelper);
+
     }
 
     private void Update()

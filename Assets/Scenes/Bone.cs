@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class Bone 
@@ -123,19 +125,44 @@ public class BodyLandmarkBonesHelper : BoneRotationHelper
 
     public override void UpdateRotation()
     {
-        Vector3 neckPos = (_landmarkWrapper.PosOf(LandmarkID.RightShoulder) + _landmarkWrapper.PosOf(LandmarkID.LeftShoulder)) / 2;
-        Vector3 hipsPos = (_landmarkWrapper.PosOf(LandmarkID.RightHip) + _landmarkWrapper.PosOf(LandmarkID.LeftHip)) / 2;
+        var neckPos = (_landmarkWrapper.PosOf(LandmarkID.RightShoulder) + _landmarkWrapper.PosOf(LandmarkID.LeftShoulder)) / 2;
+        var hipsPos = (_landmarkWrapper.PosOf(LandmarkID.RightHip) + _landmarkWrapper.PosOf(LandmarkID.LeftHip)) / 2;
         
-        Vector3 currentUpDown = (neckPos - hipsPos).normalized;
-        Quaternion deltaRotUpDown = Quaternion.FromToRotation(_initialUpDown, currentUpDown);
+        var currentUpDown = (neckPos - hipsPos).normalized;
+        var deltaRotUpDown = Quaternion.FromToRotation(_initialUpDown, currentUpDown);
 
-        Vector3 currentTwist = (_landmarkWrapper.PosOf(LandmarkID.RightHip) - _landmarkWrapper.PosOf(LandmarkID.LeftHip)).normalized;
-        Quaternion deltaRotTwist = Quaternion.FromToRotation(_initialTwist, currentTwist);
-        Vector3 currentShoulderTwist = (_landmarkWrapper.PosOf(LandmarkID.RightShoulder) - _landmarkWrapper.PosOf(LandmarkID.LeftShoulder)).normalized;
-        Quaternion deltaRotShoulderTwist = Quaternion.FromToRotation(_initialShoulderTwist, currentShoulderTwist);
+        var currentTwist = (_landmarkWrapper.PosOf(LandmarkID.RightHip) - _landmarkWrapper.PosOf(LandmarkID.LeftHip)).normalized;
+        var deltaRotTwist = Quaternion.FromToRotation(_initialTwist, currentTwist);
+        var currentShoulderTwist = (_landmarkWrapper.PosOf(LandmarkID.RightShoulder) - _landmarkWrapper.PosOf(LandmarkID.LeftShoulder)).normalized;
+        var deltaRotShoulderTwist = Quaternion.FromToRotation(_initialShoulderTwist, currentShoulderTwist);
 
         _hips.Rotation = deltaRotUpDown * deltaRotTwist * _initialHipRotation;
         _spine.Rotation = deltaRotUpDown * Quaternion.Slerp(deltaRotTwist, deltaRotShoulderTwist, 0.5f) * _initialSpineRotation;
         _chest.Rotation = deltaRotUpDown * deltaRotShoulderTwist * _initialChestRotation;
+    }
+}
+
+public class HeadRotationHelper : BoneRotationHelper
+{
+    private Bone _neck, _head;
+    
+    public HeadRotationHelper (LandmarkWrapper landmarkWrapper, Bone neck, Bone head): base(landmarkWrapper)
+    {
+        _neck = neck;
+        _head = head;
+    }
+
+    public override void UpdateRotation()
+    {
+        var leftEarPos = _landmarkWrapper.PosOf(LandmarkID.LeftEar);
+        var rightEarPos = _landmarkWrapper.PosOf(LandmarkID.RightEar);
+        var centerEarPos = (leftEarPos + rightEarPos) / 2;
+        var nosePos = _landmarkWrapper.PosOf(LandmarkID.Nose);
+        
+        var faceForward = (nosePos - centerEarPos).normalized;
+        var faceUp = Vector3.Cross( leftEarPos - rightEarPos, nosePos - centerEarPos).normalized;
+        var faceRotation = Quaternion.LookRotation(faceForward, faceUp);
+        
+        _neck.Rotation = faceRotation;
     }
 }
