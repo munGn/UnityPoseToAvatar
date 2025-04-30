@@ -43,7 +43,7 @@ public class LandmarkWrapper
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private Landmarks _landmarks;
-    private Quaternion _initialTilt;
+    // private Quaternion _initialTilt = Quaternion.AngleAxis(10f, Vector3.right);
     public bool Initialized => _landmarks.landmarks is not null;
 
     public Vector3 PosOf(LandmarkID id)
@@ -53,7 +53,8 @@ public class LandmarkWrapper
         var y = -landmark.y;
         var z = landmark.z;
         var pos = new Vector3(x, y, z);
-        return _initialTilt * pos;
+        // return _initialTilt * pos;
+        return pos;
     }
 
     public bool PresenceOf(LandmarkID id, float threshold)

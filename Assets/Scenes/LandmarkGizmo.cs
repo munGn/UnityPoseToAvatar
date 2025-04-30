@@ -6,6 +6,7 @@ using Mediapipe.Tasks.Components.Containers;
 public class LandmarkGizmo
 {
     private PoseLandmarkerResult result;
+    private Vector3 offset = new Vector3(1, 1, 1);
 
     public void SetResult(PoseLandmarkerResult result)
     {
@@ -55,6 +56,6 @@ public class LandmarkGizmo
         var x = landmark.x;
         var y = -landmark.y;
         var z = landmark.z;
-        return new Vector3(x, y, z);
+        return new Vector3(x, y, z) + offset;
     }
 }

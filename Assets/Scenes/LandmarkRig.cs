@@ -56,10 +56,12 @@ public class LandmarkRig : MonoBehaviour
         var leftUpperLegHelper = new TwoLandmarkBoneHelper(_landmarkWrapper, LandmarkID.LeftHip, LandmarkID.LeftKnee, boneLeftUpperLeg);
         var leftLowerLegHelper = new TwoLandmarkBoneHelper(_landmarkWrapper, LandmarkID.LeftKnee, LandmarkID.LeftAnkle, boneLeftLowerLeg);
         var leftFootHelper = new TwoLandmarkBoneHelper(_landmarkWrapper, LandmarkID.LeftAnkle, LandmarkID.LeftFootIndex, boneLeftFoot);
+        var leftToesHelper = new TwoLandmarkBoneHelper(_landmarkWrapper, LandmarkID.LeftHeel, LandmarkID.LeftFootIndex, boneLeftToes);
         
         var rightUpperLegHelper = new TwoLandmarkBoneHelper(_landmarkWrapper, LandmarkID.RightHip, LandmarkID.RightKnee, boneRightUpperLeg);
         var rightLowerLegHelper = new TwoLandmarkBoneHelper(_landmarkWrapper, LandmarkID.RightKnee, LandmarkID.RightAnkle, boneRightLowerLeg);
         var rightFootHelper = new TwoLandmarkBoneHelper(_landmarkWrapper, LandmarkID.RightAnkle, LandmarkID.RightFootIndex, boneRightFoot);
+        var rightToesHelper = new TwoLandmarkBoneHelper(_landmarkWrapper, LandmarkID.RightHeel, LandmarkID.RightFootIndex, boneRightToes);
         
         var bodyHelper = new BodyLandmarkBonesHelper(
             _landmarkWrapper,
@@ -84,9 +86,11 @@ public class LandmarkRig : MonoBehaviour
         _helpers.Add(leftUpperLegHelper);
         _helpers.Add(leftLowerLegHelper);
         _helpers.Add(leftFootHelper);
+        _helpers.Add(leftToesHelper);
         _helpers.Add(rightUpperLegHelper);
         _helpers.Add(rightLowerLegHelper);
         _helpers.Add(rightFootHelper);
+        _helpers.Add(rightToesHelper);
 
     }
 

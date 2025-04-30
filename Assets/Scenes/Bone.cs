@@ -87,7 +87,6 @@ public class TwoLandmarkBoneHelper : BoneRotationHelper
         var tailPresence = _landmarkWrapper.PresenceOf(_tailID, 0.8f);
         if (!headPresence || !tailPresence)
         {
-            Debug.Log(_headID);
             _bone.Reset();
             return;
         }
@@ -122,8 +121,8 @@ public class BodyLandmarkBonesHelper : BoneRotationHelper
     private readonly Vector3 _initialTwist;
     private readonly Vector3 _initialShoulderTwist;
 
-    private Bone _hips, _spine, _chest, _neck;
-    private Bone _leftShoulder, _rightShoulder;
+    private readonly Bone _hips, _spine, _chest, _neck;
+    private readonly Bone _leftShoulder, _rightShoulder;
     
     public BodyLandmarkBonesHelper(
         LandmarkWrapper landmarkWrapper,
@@ -184,7 +183,7 @@ public class BodyLandmarkBonesHelper : BoneRotationHelper
 
 public class HeadRotationHelper : BoneRotationHelper
 {
-    private Bone _neck, _head;
+    private readonly Bone _neck, _head;
     
     public HeadRotationHelper (LandmarkWrapper landmarkWrapper, Bone neck, Bone head): base(landmarkWrapper)
     {
@@ -206,8 +205,6 @@ public class HeadRotationHelper : BoneRotationHelper
         var faceForward = (facePos - centerEarPos).normalized;
         var faceUp = Vector3.Cross( leftEarPos - rightEarPos, facePos - centerEarPos).normalized;
         var faceRotation = Quaternion.LookRotation(faceForward, faceUp);
-        Debug.DrawLine(_neck.Position, _neck.Position + faceForward,Color.blue);
-        Debug.DrawLine(_neck.Position, _neck.Position + faceUp,Color.red);
         
         _neck.Rotation = faceRotation;
     }
