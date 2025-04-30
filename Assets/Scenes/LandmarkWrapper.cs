@@ -61,6 +61,13 @@ public class LandmarkWrapper
         var landmark = _landmarks.landmarks[(int)id];
         return landmark.presence > threshold;
     }
+    
+    public float VisibilityOf(LandmarkID id)
+    {
+        var landmark = _landmarks.landmarks[(int)id];
+        if (landmark.visibility != null) return (float)landmark.visibility;
+        return 0;
+    }
 
     public void SetLandmarks(Landmarks landmarks)
     {

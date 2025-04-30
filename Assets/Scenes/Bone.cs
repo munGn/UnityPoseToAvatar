@@ -10,6 +10,7 @@ public class Bone
     protected internal readonly Quaternion InitialRotation;
     protected internal readonly Bone Parent;
     private Vector3 _angularVelocity = Vector3.zero;
+    private float _smoothTime = 0.1f;
     
     public Bone(Transform head, Bone parent = null)
     {
@@ -21,19 +22,29 @@ public class Bone
     public Quaternion Rotation
     {
         get => _head.rotation;
-        // set => _head.rotation = value;
         set => SmoothSetRotation(value);
     }
+    
+    public float Sensitivity { set => _smoothTime = 1f / value; }
 
     public Vector3 Position => _head.position;
 
+
+    public void Reset()
+    {
+        var parentRotDelta = Quaternion.identity;
+        if (Parent is not null)  parentRotDelta = Parent.Rotation * Quaternion.Inverse(Parent.InitialRotation);
+        var targetRotation = parentRotDelta * InitialRotation;
+        Rotation = targetRotation;
+    }
+
     private void SmoothSetRotation(Quaternion targetRotation)
     {
-        var smoothTime = Time.deltaTime;
         var qDelta = targetRotation * Quaternion.Inverse(Rotation);
         qDelta.Normalize();
         qDelta.ToAngleAxis(out var angle, out var axis);
-        var axisAngle = Vector3.SmoothDamp(Vector3.zero, angle * axis, ref _angularVelocity, smoothTime);
+        if (angle > 180) angle -= 360;
+        var axisAngle = Vector3.SmoothDamp(Vector3.zero, angle * axis, ref _angularVelocity, _smoothTime);
         qDelta = Quaternion.AngleAxis(axisAngle.magnitude, axisAngle.normalized);
         _head.rotation = qDelta * Rotation;
     }
@@ -68,9 +79,18 @@ public class TwoLandmarkBoneHelper : BoneRotationHelper
 
     public override void UpdateRotation()
     {
+        var headVisibility = _landmarkWrapper.VisibilityOf(_headID);
+        var tailVisibility = _landmarkWrapper.VisibilityOf(_tailID);
+        // _bone.Sensitivity = 2 * (headVisibility + tailVisibility);
+        
         var headPresence = _landmarkWrapper.PresenceOf(_headID, 0.8f);
-        var tailPresence = _landmarkWrapper.PresenceOf(_headID, 0.8f);
-        if (!headPresence || !tailPresence) return;
+        var tailPresence = _landmarkWrapper.PresenceOf(_tailID, 0.8f);
+        if (!headPresence || !tailPresence)
+        {
+            Debug.Log(_headID);
+            _bone.Reset();
+            return;
+        }
         
         var headPos = _landmarkWrapper.PosOf(_headID);
         var tailPos = _landmarkWrapper.PosOf(_tailID);
@@ -103,7 +123,6 @@ public class BodyLandmarkBonesHelper : BoneRotationHelper
     private readonly Vector3 _initialShoulderTwist;
 
     private Bone _hips, _spine, _chest, _neck;
-    private Bone _leftUpperLeg, _rightUpperLeg;
     private Bone _leftShoulder, _rightShoulder;
     
     public BodyLandmarkBonesHelper(
@@ -121,8 +140,6 @@ public class BodyLandmarkBonesHelper : BoneRotationHelper
         _spine = spine;
         _chest = chest;
         _neck = neck;
-        _leftUpperLeg = leftUpperLeg;
-        _rightUpperLeg = rightUpperLeg;
         _leftShoulder = leftShoulder;
         _rightShoulder = rightShoulder;
         
@@ -140,7 +157,13 @@ public class BodyLandmarkBonesHelper : BoneRotationHelper
         var rhPresence = _landmarkWrapper.PresenceOf(LandmarkID.RightHip, 0.8f);
         var lsPresence = _landmarkWrapper.PresenceOf(LandmarkID.LeftShoulder, 0.8f);
         var lhPresence = _landmarkWrapper.PresenceOf(LandmarkID.LeftHip, 0.8f);
-        if (!rsPresence || !rhPresence || !lsPresence || !lhPresence ) return;
+        if (!rsPresence || !rhPresence || !lsPresence || !lhPresence)
+        {
+            _hips.Reset();
+            _spine.Reset();
+            _chest.Reset();
+            return;
+        }
         
         var neckPos = (_landmarkWrapper.PosOf(LandmarkID.RightShoulder) + _landmarkWrapper.PosOf(LandmarkID.LeftShoulder)) / 2;
         var hipsPos = (_landmarkWrapper.PosOf(LandmarkID.RightHip) + _landmarkWrapper.PosOf(LandmarkID.LeftHip)) / 2;
@@ -174,11 +197,17 @@ public class HeadRotationHelper : BoneRotationHelper
         var leftEarPos = _landmarkWrapper.PosOf(LandmarkID.LeftEar);
         var rightEarPos = _landmarkWrapper.PosOf(LandmarkID.RightEar);
         var centerEarPos = (leftEarPos + rightEarPos) / 2;
-        var nosePos = _landmarkWrapper.PosOf(LandmarkID.Nose);
         
-        var faceForward = (nosePos - centerEarPos).normalized;
-        var faceUp = Vector3.Cross( leftEarPos - rightEarPos, nosePos - centerEarPos).normalized;
+        var nosePos = _landmarkWrapper.PosOf(LandmarkID.Nose);
+        var leftEyePos = _landmarkWrapper.PosOf(LandmarkID.LeftEye);
+        var rightEyePos = _landmarkWrapper.PosOf(LandmarkID.RightEye);
+        var facePos = (nosePos + leftEyePos + rightEyePos) / 3;
+        
+        var faceForward = (facePos - centerEarPos).normalized;
+        var faceUp = Vector3.Cross( leftEarPos - rightEarPos, facePos - centerEarPos).normalized;
         var faceRotation = Quaternion.LookRotation(faceForward, faceUp);
+        Debug.DrawLine(_neck.Position, _neck.Position + faceForward,Color.blue);
+        Debug.DrawLine(_neck.Position, _neck.Position + faceUp,Color.red);
         
         _neck.Rotation = faceRotation;
     }
