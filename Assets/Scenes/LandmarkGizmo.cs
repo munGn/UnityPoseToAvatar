@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Mediapipe.Tasks.Vision.PoseLandmarker;
 using Mediapipe.Tasks.Components.Containers;
@@ -25,13 +26,29 @@ public class LandmarkGizmo
         {
             Gizmos.DrawSphere(LandmarkToVector(landmark), radius);
         }
+        
+        var pairs = new List<(int, int)>
+        {
+            (12, 11), (12, 24), (11, 23), (24, 23),
+            (24, 26), (23, 25), (26, 28), (25, 27),
+            (28, 32), (27, 31), (28, 30), (27, 29),
+            (32, 30), (31, 29), (14, 12), (11, 13),
+            (14, 16), (13, 15), (0, 5), (0, 1),
+        };
+      
+        foreach (var (i1, i2) in pairs)
+        {
+            var from = LandmarkToVector(poseWorldLandmark.landmarks[i1]);
+            var to = LandmarkToVector(poseWorldLandmark.landmarks[i2]);
+            Gizmos.DrawLine(from, to);
+        }
     }
     
     private Vector3 LandmarkToVector(Landmark landmark)
     {
         var x = landmark.x;
         var y = -landmark.y;
-        var z = landmark.z / 2;
+        var z = landmark.z;
         return new Vector3(x, y, z);
     }
 }
