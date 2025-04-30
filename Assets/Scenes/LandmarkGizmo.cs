@@ -18,13 +18,19 @@ public class LandmarkGizmo
         var poseWorldLandmark = result.poseWorldLandmarks[0];
         
         // Set the color with custom alpha.
-        const float radius = 0.01f;
+        const float radius = 0.015f;
         const float alpha = 0.5f;
-        Gizmos.color = new Color(1f, 0f, 0f, alpha); // Red with custom alpha
+        
 
         foreach (var landmark in poseWorldLandmark.landmarks)
         {
-            Gizmos.DrawSphere(LandmarkToVector(landmark), radius);
+            var radiusWeight = 1.0f;
+            if (landmark.presence != null) radiusWeight = (float)landmark.presence;
+            Gizmos.DrawSphere(LandmarkToVector(landmark), radius * radiusWeight);
+
+            var colorWeight = 1.0f;
+            if (landmark.visibility != null) colorWeight = (float)landmark.visibility;
+            Gizmos.color = new Color(1f - colorWeight, 0f,colorWeight, alpha); // Red with custom alpha
         }
         
         var pairs = new List<(int, int)>

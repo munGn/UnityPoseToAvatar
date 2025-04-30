@@ -22,11 +22,11 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
 
     protected override IEnumerator Run()
     {
-      const string modelPath = "pose_landmarker_full.bytes";
-      yield return AssetLoader.PrepareAssetAsync(modelPath);
+      const string poseModelPath = "pose_landmarker_full.bytes";
+      yield return AssetLoader.PrepareAssetAsync(poseModelPath);
 
       var options = new PoseLandmarkerOptions(
-        new Tasks.Core.BaseOptions(modelAssetPath: modelPath),
+        new Tasks.Core.BaseOptions(modelAssetPath: poseModelPath),
         runningMode: Tasks.Vision.Core.RunningMode.VIDEO
       );
       taskApi = PoseLandmarker.CreateFromOptions(options, GpuManager.GpuResources);
