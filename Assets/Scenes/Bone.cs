@@ -52,11 +52,11 @@ public class Bone
 
 public class BoneRotationHelper
 {
-    protected readonly LandmarkWrapper _landmarkWrapper;
+    protected readonly LandmarkWrapper LandmarkWrapper;
 
     protected BoneRotationHelper(LandmarkWrapper landmarkWrapper)
     {
-        _landmarkWrapper = landmarkWrapper;
+        LandmarkWrapper = landmarkWrapper;
     }
     
     public virtual void UpdateRotation()
@@ -79,20 +79,20 @@ public class TwoLandmarkBoneHelper : BoneRotationHelper
 
     public override void UpdateRotation()
     {
-        var headVisibility = _landmarkWrapper.VisibilityOf(_headID);
-        var tailVisibility = _landmarkWrapper.VisibilityOf(_tailID);
+        var headVisibility = LandmarkWrapper.VisibilityOf(_headID);
+        var tailVisibility = LandmarkWrapper.VisibilityOf(_tailID);
         // _bone.Sensitivity = 2 * (headVisibility + tailVisibility);
         
-        var headPresence = _landmarkWrapper.PresenceOf(_headID, 0.8f);
-        var tailPresence = _landmarkWrapper.PresenceOf(_tailID, 0.8f);
+        var headPresence = LandmarkWrapper.PresenceOf(_headID, 0.8f);
+        var tailPresence = LandmarkWrapper.PresenceOf(_tailID, 0.8f);
         if (!headPresence || !tailPresence)
         {
             _bone.Reset();
             return;
         }
         
-        var headPos = _landmarkWrapper.PosOf(_headID);
-        var tailPos = _landmarkWrapper.PosOf(_tailID);
+        var headPos = LandmarkWrapper.PosOf(_headID);
+        var tailPos = LandmarkWrapper.PosOf(_tailID);
         var currentDir = (tailPos - headPos).normalized;
 
         var initialDir = _bone.InitialRotation * Vector3.up;
@@ -152,10 +152,10 @@ public class BodyLandmarkBonesHelper : BoneRotationHelper
 
     public override void UpdateRotation()
     {
-        var rsPresence = _landmarkWrapper.PresenceOf(LandmarkID.RightShoulder, 0.8f);
-        var rhPresence = _landmarkWrapper.PresenceOf(LandmarkID.RightHip, 0.8f);
-        var lsPresence = _landmarkWrapper.PresenceOf(LandmarkID.LeftShoulder, 0.8f);
-        var lhPresence = _landmarkWrapper.PresenceOf(LandmarkID.LeftHip, 0.8f);
+        var rsPresence = LandmarkWrapper.PresenceOf(LandmarkID.RightShoulder, 0.8f);
+        var rhPresence = LandmarkWrapper.PresenceOf(LandmarkID.RightHip, 0.8f);
+        var lsPresence = LandmarkWrapper.PresenceOf(LandmarkID.LeftShoulder, 0.8f);
+        var lhPresence = LandmarkWrapper.PresenceOf(LandmarkID.LeftHip, 0.8f);
         if (!rsPresence || !rhPresence || !lsPresence || !lhPresence)
         {
             _hips.Reset();
@@ -164,15 +164,15 @@ public class BodyLandmarkBonesHelper : BoneRotationHelper
             return;
         }
         
-        var neckPos = (_landmarkWrapper.PosOf(LandmarkID.RightShoulder) + _landmarkWrapper.PosOf(LandmarkID.LeftShoulder)) / 2;
-        var hipsPos = (_landmarkWrapper.PosOf(LandmarkID.RightHip) + _landmarkWrapper.PosOf(LandmarkID.LeftHip)) / 2;
+        var neckPos = (LandmarkWrapper.PosOf(LandmarkID.RightShoulder) + LandmarkWrapper.PosOf(LandmarkID.LeftShoulder)) / 2;
+        var hipsPos = (LandmarkWrapper.PosOf(LandmarkID.RightHip) + LandmarkWrapper.PosOf(LandmarkID.LeftHip)) / 2;
         
         var currentUpDown = (neckPos - hipsPos).normalized;
         var deltaRotUpDown = Quaternion.FromToRotation(_initialUpDown, currentUpDown);
 
-        var currentTwist = (_landmarkWrapper.PosOf(LandmarkID.RightHip) - _landmarkWrapper.PosOf(LandmarkID.LeftHip)).normalized;
+        var currentTwist = (LandmarkWrapper.PosOf(LandmarkID.RightHip) - LandmarkWrapper.PosOf(LandmarkID.LeftHip)).normalized;
         var deltaRotTwist = Quaternion.FromToRotation(_initialTwist, currentTwist);
-        var currentShoulderTwist = (_landmarkWrapper.PosOf(LandmarkID.RightShoulder) - _landmarkWrapper.PosOf(LandmarkID.LeftShoulder)).normalized;
+        var currentShoulderTwist = (LandmarkWrapper.PosOf(LandmarkID.RightShoulder) - LandmarkWrapper.PosOf(LandmarkID.LeftShoulder)).normalized;
         var deltaRotShoulderTwist = Quaternion.FromToRotation(_initialShoulderTwist, currentShoulderTwist);
 
         _hips.Rotation = deltaRotUpDown * deltaRotTwist * _initialHipRotation;
@@ -193,13 +193,13 @@ public class HeadRotationHelper : BoneRotationHelper
 
     public override void UpdateRotation()
     {
-        var leftEarPos = _landmarkWrapper.PosOf(LandmarkID.LeftEar);
-        var rightEarPos = _landmarkWrapper.PosOf(LandmarkID.RightEar);
+        var leftEarPos = LandmarkWrapper.PosOf(LandmarkID.LeftEar);
+        var rightEarPos = LandmarkWrapper.PosOf(LandmarkID.RightEar);
         var centerEarPos = (leftEarPos + rightEarPos) / 2;
         
-        var nosePos = _landmarkWrapper.PosOf(LandmarkID.Nose);
-        var leftEyePos = _landmarkWrapper.PosOf(LandmarkID.LeftEye);
-        var rightEyePos = _landmarkWrapper.PosOf(LandmarkID.RightEye);
+        var nosePos = LandmarkWrapper.PosOf(LandmarkID.Nose);
+        var leftEyePos = LandmarkWrapper.PosOf(LandmarkID.LeftEye);
+        var rightEyePos = LandmarkWrapper.PosOf(LandmarkID.RightEye);
         var facePos = (nosePos + leftEyePos + rightEyePos) / 3;
         
         var faceForward = (facePos - centerEarPos).normalized;
