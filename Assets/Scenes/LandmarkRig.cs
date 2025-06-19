@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 using Mediapipe.Tasks.Vision.PoseLandmarker;
 
 public class LandmarkRig : MonoBehaviour
@@ -91,9 +90,11 @@ public class LandmarkRig : MonoBehaviour
     private void Update()
     {
         if (!_landmarkWrapper.Initialized) return;
-
+        
         foreach (var helper in _helpers)
+        {
             helper.UpdateRotation();
+        }
     }
 
     public void SetPose(PoseLandmarkerResult result)

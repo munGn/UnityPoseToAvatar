@@ -24,7 +24,7 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
     protected override IEnumerator Run()
     {
       const string poseModelPath = "pose_landmarker_full.bytes";
-            yield return AssetLoader.PrepareAssetAsync(poseModelPath);
+      yield return AssetLoader.PrepareAssetAsync(poseModelPath);
 
       var options = new PoseLandmarkerOptions(
         new Tasks.Core.BaseOptions(modelAssetPath: poseModelPath),
